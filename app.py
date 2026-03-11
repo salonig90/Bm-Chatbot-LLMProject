@@ -117,13 +117,19 @@ def chat():
     for word in ['better', 'products', 'for', 'show', 'me', 'i', 'want', 'search', 'find', 'about', 'related', 'please', 'suggest', 'supplement', 'supplements']:
         search_query = search_query.replace(f" {word} ", " ").replace(f"{word} ", "").replace(f" {word}", "")
     
+    # Print search parameters for debugging
+    print(f"\n--- Chatbot Search Request ---")
+    print(f"User Message: {user_message}")
+    print(f"Search Query: {search_query}")
+    print(f"Using API Key: {os.getenv('GEMINI_API_KEY')[:10]}...{os.getenv('GEMINI_API_KEY')[-5:]}")
+    
     # Search for more results and filter them by threshold
     raw_results = collection.query(
         query_texts=[search_query],
         n_results=50
     )
     
-    # Use a stricter threshold (0.7) to match the frontend search behavior
+    # Use a stricter threshold (0.7) to match the frontend search behavior exactly
     threshold = 0.7
     filtered_docs = []
     for i in range(len(raw_results['documents'][0])):
@@ -137,6 +143,8 @@ def chat():
     # Cap the context at 15 products to keep the chat manageable
     final_docs = filtered_docs[:15]
     result_count = len(final_docs)
+    print(f"Found {result_count} relevant products")
+    print(f"------------------------------\n")
 
     # 2. Prepare context from search results
     context = ""
